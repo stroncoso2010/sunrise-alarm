@@ -31,6 +31,15 @@ export const AlarmItem = ({ alarm, onToggle, onDelete, onEdit }: AlarmItemProps)
             <p className="text-sm text-muted-foreground mb-2">{alarm.label}</p>
           )}
           
+          {alarm.snoozeEnabled && (
+            <div className="mb-3 flex items-center gap-2 text-sm">
+              <span className="text-accent font-medium">DESPERTAR:</span>
+              <span className="text-foreground">SÍ</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="text-foreground">cada {alarm.snoozeInterval} MIN</span>
+            </div>
+          )}
+          
           <div className="flex gap-2">
             {alarm.days.length === 7 ? (
               <span className="text-sm text-muted-foreground">Todos los días</span>

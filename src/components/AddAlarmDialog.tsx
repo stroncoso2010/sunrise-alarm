@@ -29,16 +29,22 @@ export const AddAlarmDialog = ({
   const [time, setTime] = useState("08:00");
   const [label, setLabel] = useState("");
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const [snoozeEnabled, setSnoozeEnabled] = useState(false);
+  const [snoozeInterval, setSnoozeInterval] = useState(10);
 
   useEffect(() => {
     if (editingAlarm) {
       setTime(editingAlarm.time);
       setLabel(editingAlarm.label || "");
       setSelectedDays(editingAlarm.days);
+      setSnoozeEnabled(editingAlarm.snoozeEnabled);
+      setSnoozeInterval(editingAlarm.snoozeInterval);
     } else {
       setTime("08:00");
       setLabel("");
       setSelectedDays([]);
+      setSnoozeEnabled(false);
+      setSnoozeInterval(10);
     }
   }, [editingAlarm, open]);
 
@@ -54,6 +60,8 @@ export const AddAlarmDialog = ({
       label: label || undefined,
       enabled: true,
       days: selectedDays,
+      snoozeEnabled,
+      snoozeInterval,
     });
     onOpenChange(false);
   };
@@ -106,6 +114,46 @@ export const AddAlarmDialog = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="space-y-3 pt-4 border-t border-border">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">DESPERTAR</Label>
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">
+                  {snoozeEnabled ? "SÍ" : "NO"}
+                </span>
+                <button
+                  onClick={() => setSnoozeEnabled(!snoozeEnabled)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    snoozeEnabled ? "bg-primary" : "bg-secondary"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      snoozeEnabled ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+            
+            {snoozeEnabled && (
+              <div className="space-y-2">
+                <Label htmlFor="snooze-interval" className="text-sm text-muted-foreground">
+                  Repetir cada (minutos)
+                </Label>
+                <Input
+                  id="snooze-interval"
+                  type="number"
+                  min="1"
+                  max="60"
+                  value={snoozeInterval}
+                  onChange={(e) => setSnoozeInterval(parseInt(e.target.value) || 10)}
+                  className="h-12"
+                />
+              </div>
+            )}
           </div>
         </div>
 

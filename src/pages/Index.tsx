@@ -28,18 +28,36 @@ const Index = () => {
       const now = new Date();
       const currentTime = now.toTimeString().slice(0, 5);
       const currentDay = (now.getDay() + 6) % 7;
+      const currentDateTime = now.getTime();
 
       alarms.forEach((alarm) => {
-        if (
-          alarm.enabled &&
-          alarm.time === currentTime &&
-          (alarm.days.length === 0 || alarm.days.includes(currentDay))
-        ) {
+        const shouldTrigger = alarm.enabled && (
+          (alarm.time === currentTime && (alarm.days.length === 0 || alarm.days.includes(currentDay)))
+        );
+
+        // Check for snooze trigger
+        const shouldSnooze = alarm.enabled && 
+          alarm.snoozeEnabled && 
+          alarm.lastTriggered &&
+          (currentDateTime - new Date(alarm.lastTriggered).getTime()) >= (alarm.snoozeInterval * 60 * 1000);
+
+        if (shouldTrigger || shouldSnooze) {
           playAlarmSound();
           toast.success(`¡Alarma! ${alarm.label || alarm.time}`, {
-            description: "Tu alarma está sonando",
+            description: alarm.snoozeEnabled 
+              ? `Repetición cada ${alarm.snoozeInterval} min` 
+              : "Tu alarma está sonando",
             duration: 10000,
           });
+
+          // Update last triggered time
+          setAlarms((prev) =>
+            prev.map((a) =>
+              a.id === alarm.id
+                ? { ...a, lastTriggered: now.toISOString(), snoozeCount: (a.snoozeCount || 0) + 1 }
+                : a
+            )
+          );
         }
       });
     };
@@ -112,37 +130,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-dawn flex items-center justify-center">
-              <Bell className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-foreground">Despertador</h1>
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="container max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-dawn flex items-center justify-center">
+            <Bell className="w-6 h-6 text-white" />
           </div>
-          <Button
-            onClick={handleOpenDialog}
-            size="lg"
-            className="rounded-full gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            Nueva alarma
-          </Button>
+          <h1 className="text-3xl font-bold text-foreground">Despertador</h1>
         </div>
 
         <CurrentTime />
 
-        <div className="space-y-4 mt-12">
+        <div className="space-y-4 mt-12 flex-1 pb-32">
           {alarms.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground text-lg mb-4">
+              <p className="text-muted-foreground text-lg">
                 No hay alarmas configuradas
               </p>
-              <Button onClick={handleOpenDialog} variant="outline" size="lg">
-                <Plus className="w-5 h-5 mr-2" />
-                Crear primera alarma
-              </Button>
             </div>
           ) : (
             alarms.map((alarm) => (
@@ -155,6 +159,17 @@ const Index = () => {
               />
             ))
           )}
+        </div>
+
+        <div className="fixed bottom-8 left-0 right-0 flex justify-center pointer-events-none">
+          <Button
+            onClick={handleOpenDialog}
+            size="lg"
+            className="rounded-full gap-2 shadow-medium pointer-events-auto px-8 py-6 text-lg"
+          >
+            <Plus className="w-6 h-6" />
+            Nueva alarma
+          </Button>
         </div>
 
         <AddAlarmDialog
