@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TimePicker } from "@/components/TimePicker";
 
 interface AddAlarmDialogProps {
   open: boolean;
@@ -77,14 +78,7 @@ export const AddAlarmDialog = ({
         
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label htmlFor="time">Hora</Label>
-            <Input
-              id="time"
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="text-2xl font-bold h-14"
-            />
+            <TimePicker value={time} onChange={setTime} />
           </div>
 
           <div className="space-y-3 pt-2 border-t border-border">
