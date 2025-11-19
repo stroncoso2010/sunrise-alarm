@@ -33,7 +33,7 @@ export const AlarmItem = ({ alarm, onToggle, onDelete, onEdit }: AlarmItemProps)
           
           {alarm.snoozeEnabled && (
             <div className="mb-3 flex items-center gap-2 text-sm">
-              <span className="text-accent font-medium">DESPERTAR:</span>
+              <span className="text-accent font-medium">Despertar:</span>
               <span className="text-foreground">SÍ</span>
               <span className="text-muted-foreground">•</span>
               <span className="text-foreground">cada {alarm.snoozeInterval} MIN</span>
