@@ -4,4 +4,8 @@ export interface Alarm {
   enabled: boolean;
   days: number[];
   label?: string;
+  snoozeEnabled: boolean;
+  snoozeInterval: number;
+  snoozeCount?: number;
+  lastTriggered?: string;
 }
