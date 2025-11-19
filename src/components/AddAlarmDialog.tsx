@@ -87,38 +87,9 @@ export const AddAlarmDialog = ({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="label">Etiqueta (opcional)</Label>
-            <Input
-              id="label"
-              placeholder="Ej: Despertar, Reunión..."
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Repetir</Label>
-            <div className="flex gap-2">
-              {DAYS.map((day, index) => (
-                <button
-                  key={index}
-                  onClick={() => toggleDay(index)}
-                  className={`flex-1 h-12 rounded-xl text-sm font-medium transition-colors ${
-                    selectedDays.includes(index)
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-4 border-t border-border">
+          <div className="space-y-3 pt-2 border-t border-border">
             <div className="flex items-center justify-between">
-              <Label className="text-base font-semibold">DESPERTAR</Label>
+              <Label className="text-base font-semibold">Despertar</Label>
               <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground">
                   {snoozeEnabled ? "SÍ" : "NO"}
@@ -154,6 +125,35 @@ export const AddAlarmDialog = ({
                 />
               </div>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="label">Etiqueta (opcional)</Label>
+            <Input
+              id="label"
+              placeholder="Ej: Despertar, Reunión..."
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Repetir</Label>
+            <div className="flex gap-2">
+              {DAYS.map((day, index) => (
+                <button
+                  key={index}
+                  onClick={() => toggleDay(index)}
+                  className={`flex-1 h-12 rounded-xl text-sm font-medium transition-colors ${
+                    selectedDays.includes(index)
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
