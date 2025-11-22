@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TimePicker } from "@/components/TimePicker";
+import { SoundSelector } from "@/components/SoundSelector";
 
 interface AddAlarmDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ export const AddAlarmDialog = ({
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [snoozeEnabled, setSnoozeEnabled] = useState(false);
   const [snoozeInterval, setSnoozeInterval] = useState(10);
+  const [sound, setSound] = useState("classic");
 
   useEffect(() => {
     if (editingAlarm) {
@@ -40,12 +42,14 @@ export const AddAlarmDialog = ({
       setSelectedDays(editingAlarm.days);
       setSnoozeEnabled(editingAlarm.snoozeEnabled);
       setSnoozeInterval(editingAlarm.snoozeInterval);
+      setSound(editingAlarm.sound || "classic");
     } else {
       setTime("08:00");
       setLabel("");
       setSelectedDays([]);
       setSnoozeEnabled(false);
       setSnoozeInterval(10);
+      setSound("classic");
     }
   }, [editingAlarm, open]);
 
@@ -63,6 +67,7 @@ export const AddAlarmDialog = ({
       days: selectedDays,
       snoozeEnabled,
       snoozeInterval,
+      sound,
     });
     onOpenChange(false);
   };
@@ -148,6 +153,10 @@ export const AddAlarmDialog = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="pt-2 border-t border-border">
+            <SoundSelector value={sound} onChange={setSound} />
           </div>
         </div>
 

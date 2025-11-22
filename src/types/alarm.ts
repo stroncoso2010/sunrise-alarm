@@ -8,4 +8,5 @@ export interface Alarm {
   snoozeInterval: number;
   snoozeCount?: number;
   lastTriggered?: string;
+  sound?: string;
 }

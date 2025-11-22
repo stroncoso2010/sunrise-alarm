@@ -4,8 +4,9 @@ import { AlarmItem } from "@/components/AlarmItem";
 import { AddAlarmDialog } from "@/components/AddAlarmDialog";
 import { CurrentTime } from "@/components/CurrentTime";
 import { Button } from "@/components/ui/button";
-import { Plus, Bell } from "lucide-react";
+import { Plus, Bell, Download } from "lucide-react";
 import { toast } from "sonner";
+import { playSound } from "@/utils/alarmSounds";
 
 const Index = () => {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
@@ -42,7 +43,7 @@ const Index = () => {
           (currentDateTime - new Date(alarm.lastTriggered).getTime()) >= (alarm.snoozeInterval * 60 * 1000);
 
         if (shouldTrigger || shouldSnooze) {
-          playAlarmSound();
+          playSound(alarm.sound || "classic");
           toast.success(`¡Alarma! ${alarm.label || alarm.time}`, {
             description: alarm.snoozeEnabled 
               ? `Repetición cada ${alarm.snoozeInterval} min` 
@@ -66,26 +67,6 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [alarms]);
 
-  const playAlarmSound = () => {
-    const audioContext = new AudioContext();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-
-    oscillator.frequency.value = 800;
-    oscillator.type = "sine";
-
-    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(
-      0.01,
-      audioContext.currentTime + 2
-    );
-
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 2);
-  };
 
   const handleToggle = (id: string) => {
     setAlarms((prev) =>
@@ -129,6 +110,18 @@ const Index = () => {
     setDialogOpen(true);
   };
 
+  const handleDownloadAlarms = () => {
+    const dataStr = JSON.stringify(alarms, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `alarmas-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Alarmas descargadas");
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="container max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
@@ -137,6 +130,17 @@ const Index = () => {
             <Bell className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-foreground">Despertador</h1>
+          {alarms.length > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadAlarms}
+              className="ml-auto gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Descargar
+            </Button>
+          )}
         </div>
 
         <CurrentTime />
