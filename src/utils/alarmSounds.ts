@@ -25,16 +25,6 @@ export const ALARM_SOUNDS: AlarmSound[] = [
     name: "Melodía",
     description: "Secuencia musical agradable",
   },
-  {
-    id: "birdsong",
-    name: "Canto de pájaros",
-    description: "Sonidos de naturaleza",
-  },
-  {
-    id: "chimes",
-    name: "Campanas",
-    description: "Sonido de campanas suaves",
-  },
 ];
 
 export const playSound = (soundId: string = "classic") => {

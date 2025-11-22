@@ -110,18 +110,42 @@ export const AddAlarmDialog = ({
             
             {snoozeEnabled && (
               <div className="space-y-2">
-                <Label htmlFor="snooze-interval" className="text-sm text-muted-foreground">
-                  Repetir cada (minutos)
+                <Label className="text-sm text-muted-foreground">
+                  Repetir cada
                 </Label>
-                <Input
-                  id="snooze-interval"
-                  type="number"
-                  min="1"
-                  max="60"
-                  value={snoozeInterval}
-                  onChange={(e) => setSnoozeInterval(parseInt(e.target.value) || 10)}
-                  className="h-12"
-                />
+                <div className="grid grid-cols-4 gap-2">
+                  {[5, 10, 15].map((minutes) => (
+                    <button
+                      key={minutes}
+                      onClick={() => setSnoozeInterval(minutes)}
+                      className={`h-12 rounded-xl text-sm font-medium transition-colors ${
+                        snoozeInterval === minutes
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                      }`}
+                    >
+                      {minutes} min
+                    </button>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const custom = prompt("Ingresa los minutos:", snoozeInterval.toString());
+                      if (custom) {
+                        const value = parseInt(custom);
+                        if (value > 0 && value <= 60) {
+                          setSnoozeInterval(value);
+                        }
+                      }
+                    }}
+                    className={`h-12 rounded-xl text-sm font-medium transition-colors ${
+                      ![5, 10, 15].includes(snoozeInterval)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {![5, 10, 15].includes(snoozeInterval) ? `${snoozeInterval} min` : "Otro"}
+                  </button>
+                </div>
               </div>
             )}
           </div>
