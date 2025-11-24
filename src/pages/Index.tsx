@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Plus, Bell, Download } from "lucide-react";
 import { toast } from "sonner";
 import { playSound } from "@/utils/alarmSounds";
+import { useNativeFeatures } from "@/hooks/useNativeFeatures";
+import { ImpactStyle } from "@capacitor/haptics";
 
 const Index = () => {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAlarm, setEditingAlarm] = useState<Alarm | null>(null);
+  const { isNative, triggerHaptic, scheduleNotification, cancelNotification } = useNativeFeatures();
 
   useEffect(() => {
     const savedAlarms = localStorage.getItem("alarms");
@@ -44,6 +47,7 @@ const Index = () => {
 
         if (shouldTrigger || shouldSnooze) {
           playSound(alarm.sound || "classic");
+          triggerHaptic(ImpactStyle.Heavy);
           toast.success(`¡Alarma! ${alarm.label || alarm.time}`, {
             description: alarm.snoozeEnabled 
               ? `Repetición cada ${alarm.snoozeInterval} min` 
@@ -69,14 +73,26 @@ const Index = () => {
 
 
   const handleToggle = (id: string) => {
+    triggerHaptic(ImpactStyle.Light);
     setAlarms((prev) =>
-      prev.map((alarm) =>
-        alarm.id === id ? { ...alarm, enabled: !alarm.enabled } : alarm
-      )
+      prev.map((alarm) => {
+        if (alarm.id === id) {
+          const updated = { ...alarm, enabled: !alarm.enabled };
+          if (updated.enabled) {
+            scheduleNotification(updated);
+          } else {
+            cancelNotification(id);
+          }
+          return updated;
+        }
+        return alarm;
+      })
     );
   };
 
   const handleDelete = (id: string) => {
+    triggerHaptic(ImpactStyle.Medium);
+    cancelNotification(id);
     setAlarms((prev) => prev.filter((alarm) => alarm.id !== id));
     toast.success("Alarma eliminada");
   };
@@ -87,12 +103,17 @@ const Index = () => {
   };
 
   const handleSave = (alarmData: Omit<Alarm, "id">) => {
+    triggerHaptic(ImpactStyle.Medium);
     if (editingAlarm) {
+      const updatedAlarm = { ...editingAlarm, ...alarmData };
       setAlarms((prev) =>
         prev.map((alarm) =>
-          alarm.id === editingAlarm.id ? { ...alarm, ...alarmData } : alarm
+          alarm.id === editingAlarm.id ? updatedAlarm : alarm
         )
       );
+      if (updatedAlarm.enabled) {
+        scheduleNotification(updatedAlarm);
+      }
       toast.success("Alarma actualizada");
       setEditingAlarm(null);
     } else {
@@ -101,11 +122,15 @@ const Index = () => {
         id: Date.now().toString(),
       };
       setAlarms((prev) => [...prev, newAlarm]);
+      if (newAlarm.enabled) {
+        scheduleNotification(newAlarm);
+      }
       toast.success("Alarma creada");
     }
   };
 
   const handleOpenDialog = () => {
+    triggerHaptic(ImpactStyle.Light);
     setEditingAlarm(null);
     setDialogOpen(true);
   };
