@@ -74,14 +74,14 @@ export const AddAlarmDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-md max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>
             {editingAlarm ? "Editar alarma" : "Nueva alarma"}
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 overflow-y-auto flex-1 -mx-6 px-6">
           <div className="space-y-2">
             <TimePicker value={time} onChange={setTime} />
           </div>
@@ -184,7 +184,7 @@ export const AddAlarmDialog = ({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 pt-4 border-t border-border">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
