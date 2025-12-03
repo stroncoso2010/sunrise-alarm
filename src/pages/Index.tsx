@@ -148,8 +148,8 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="container max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col">
+    <div className="h-screen bg-background flex flex-col overflow-hidden">
+      <div className="container max-w-4xl mx-auto px-4 py-6 flex-1 flex flex-col overflow-y-auto">
         <div className="flex items-center gap-3 mb-8">
           <div className="w-12 h-12 rounded-2xl bg-gradient-dawn flex items-center justify-center">
             <Bell className="w-6 h-6 text-white" />
